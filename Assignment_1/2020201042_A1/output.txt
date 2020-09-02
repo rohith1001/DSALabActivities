@@ -1,0 +1,56 @@
+Before i is: 0
+After i is: 1
+Before i is: 1
+After i is: 2
+Pushing 75 onto the stack.
+Here in else. exp[2] is: *
+Before i is: 3
+After i is: 4
+Before i is: 4
+After i is: 5
+Before i is: 5
+After i is: 6
+Pushing 854 onto the stack.
+Here in else. exp[6] is: /
+Calling compute val1: 75 val2: 854 op: *
+Before i is: 7
+After i is: 8
+Before i is: 8
+After i is: 9
+Before i is: 9
+After i is: 10
+Before i is: 10
+After i is: 11
+Pushing 7953 onto the stack.
+Here in else. exp[11] is: /
+Calling compute val1: 64050 val2: 7953 op: /
+Before i is: 12
+After i is: 13
+Before i is: 13
+After i is: 14
+Before i is: 14
+After i is: 15
+Before i is: 15
+After i is: 16
+Pushing 6490 onto the stack.
+Here in else. exp[16] is: *
+Calling compute val1: 8.05356 val2: 6490 op: /
+Before i is: 17
+After i is: 18
+Before i is: 18
+After i is: 19
+Before i is: 19
+After i is: 20
+Before i is: 20
+After i is: 21
+Pushing 1641 onto the stack.
+Here in else. exp[21] is: -
+Calling compute val1: 0.00124092 val2: 1641 op: *
+Before i is: 22
+After i is: 23
+Before i is: 23
+After i is: 24
+Before i is: 24
+After i is: 25
+Pushing 100 onto the stack.
+-97.9637
