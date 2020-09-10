@@ -223,8 +223,8 @@ template <class T> class deque {
     int get_max_size() { return max_size; }
 
     void display() {
-        int i = front;
-        for (i != rear) {
+        int i = head;
+        while (i != tail) {
             cout << arr[i] << " ";
             i = (i + 1) % max_size;
         }
@@ -238,11 +238,19 @@ int main() {
     int q;
     cin >> q;
     q--;
-    int constChoice;
-    cin >> constChoice;
-    if (constChoice == 5) {
-        //
+    int constructorChoice;
+    cin >> constructorChoice;
+    if (constructorChoice == 5) {
+        // no parameter for constructor here
+        deque<int> d1;
+        while (q--) {
+        }
     } else {
+        int n, x;
+        cin >> n >> x;
+        deque<int> d2(n, x);
+        while (q--) {
+        }
     }
     return 0;
 }
