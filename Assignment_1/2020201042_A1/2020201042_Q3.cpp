@@ -70,7 +70,7 @@ template <class T> class deque {
     }
 
     void pop_back() {
-        if (empty()) {
+        if (isEmpty()) {
             cout << "Empty deque...Cannot pop_back() anymore!" << endl;
             exit(0);
         } else {
@@ -124,7 +124,7 @@ template <class T> class deque {
     }
 
     void pop_front() {
-        if (empty()) {
+        if (isEmpty()) {
             cout << "Empty deque...Cannot pop_front() anymore!" << endl;
             exit(0);
         } else {
@@ -152,7 +152,14 @@ template <class T> class deque {
 
     void resize(int x, T d) {
         if (x < size()) {
-            cout << "Resizing into a smaller size...Not allowed" << endl;
+            if (x < 0) {
+                cout << "Resize to negative values is not allowed..." << endl;
+            } else if (x == 0) {
+                head = -1;
+                tail = 0;
+            } else {
+                tail = (head + x - 1) % max_size;
+            }
         } else if (max_size - size() >= x) {
             // this means no need of new memory
             if (head == -1) {
@@ -201,52 +208,41 @@ template <class T> class deque {
         tail = 0;
     }
 
-    bool empty() { return (head == -1); }
+    bool isEmpty() { return (head == -1); }
+
+    string empty() {
+        string str;
+        if (isEmpty) {
+            str = "true";
+        } else {
+            str = "false";
+        }
+        return str;
+    }
 
     int get_max_size() { return max_size; }
+
+    void display() {
+        int i = front;
+        for (i != rear) {
+            cout << arr[i] << " ";
+            i = (i + 1) % max_size;
+        }
+        cout << arr[i] << endl;
+    }
 
     ~deque() { delete[] arr; }
 };
 
 int main() {
-    deque<int> d(2, 0);
-    cout << "Initial pseudo size of d is: " << d.size() << endl;
-    cout << "Initial max_size of d is: " << d.get_max_size() << endl;
-    for (int j = 0; j < 2; j++) {
-        for (int i = 0; i < 10; i++) {
-            d.push_front(i);
-            cout << "j is: " << j << endl;
-            cout << "Pushing front " << i << endl;
-            cout << "Pseudo size is: " << d.size() << endl;
-            cout << "Max size is: " << d.get_max_size() << endl;
-            cout << "-----------------------------------" << endl;
-        }
-        for (int i = 0; i < d.size(); i++) {
-            cout << d[i] << " ";
-        }
-        cout << "Clearing..." << endl;
-        cout << "Gone..." << endl;
-        d.clear();
-        cout << "Attempting to pop_front" << endl;
-        d.pop_front();
-        cout << endl;
-        for (int i = d.size() - 1; i >= 0; i--) {
-            d.pop_front();
-            cout << "j is: " << j << endl;
-            cout << "Popping front " << i << endl;
-            cout << "Pseudo size is: " << d.size() << endl;
-            cout << "Max size is: " << d.get_max_size() << endl;
-            cout << "-----------------------------------" << endl;
-        }
-        for (int i = 0; i < d.size(); i++) {
-            cout << "Not here" << endl;
-            cout << d[i] << " ";
-        }
-        cout << endl;
-    }
-    cout << "Hello" << endl;
-    for (int i = 0; i < d.size(); i++) {
-        cout << d[i] << endl;
+    int q;
+    cin >> q;
+    q--;
+    int constChoice;
+    cin >> constChoice;
+    if (constChoice == 5) {
+        //
+    } else {
     }
     return 0;
 }
