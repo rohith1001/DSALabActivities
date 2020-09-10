@@ -140,36 +140,34 @@ class Bigint {
         Bigint temp;
         for (int i = str.size() - 1; i >= 0; i--) {
             int a = str[i] - '0';
-            cout << "a: " << a << endl;
             string result;
             int carry = 0;
             for (int j = obj.str.size() - 1; j >= 0; j--) {
                 int b = obj.str[j] - '0';
-                cout << "b: " << b << endl;
                 int product = (a * b) + carry;
-                cout << "a:" << a << " b:" << b << endl;
                 if (product > 9) {
                     carry = product / 10;
-                    cout << "setting carry to:" << carry << endl;
                     product = product % 10;
                 } else {
                     carry = 0;
-                    cout << "Here" << endl;
                 }
-                cout << "product:" << product << " carry:" << carry << endl;
                 result += to_string(product);
             }
             if (carry > 0) {
                 result += to_string(carry);
             }
             result = string(result.rbegin(), result.rend());
-            cout << "result is: " << result << endl;
+            for (int k = 0; k < str.size() - i - 1; k++) {
+                result += "0";
+            }
             temp.setStr(result);
             b = b + temp;
             result = "";
         }
         return b;
     }
+
+    // Bigint power(Bigint b1, Bigint b2) { Bigint b("1"); }
 
     void print() { cout << str << endl; }
 
