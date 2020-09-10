@@ -1,10 +1,12 @@
 #include <iostream>
 using namespace std;
+
 class Bigint {
   private:
     string str;
 
   public:
+    Bigint() { str = ""; }
     Bigint(string s) { str = s; }
 
     Bigint operator+(Bigint &obj) {
@@ -134,23 +136,44 @@ class Bigint {
     }
 
     Bigint operator*(Bigint &obj) {
-        int n1 = str.size() - 1;
-        int n2 = obj.str.size() - 1;
-        string a, b;
-        if (n1 > n2) {
-            a = str;
-            b = obj.str;
-        } else {
-            a = obj.str;
-            b = str;
+        Bigint b;
+        Bigint temp;
+        for (int i = str.size() - 1; i >= 0; i--) {
+            int a = str[i] - '0';
+            cout << "a: " << a << endl;
+            string result;
+            int carry = 0;
+            for (int j = obj.str.size() - 1; j >= 0; j--) {
+                int b = obj.str[j] - '0';
+                cout << "b: " << b << endl;
+                int product = (a * b) + carry;
+                cout << "a:" << a << " b:" << b << endl;
+                if (product > 9) {
+                    carry = product / 10;
+                    cout << "setting carry to:" << carry << endl;
+                    product = product % 10;
+                } else {
+                    carry = 0;
+                    cout << "Here" << endl;
+                }
+                cout << "product:" << product << " carry:" << carry << endl;
+                result += to_string(product);
+            }
+            if (carry > 0) {
+                result += to_string(carry);
+            }
+            result = string(result.rbegin(), result.rend());
+            cout << "result is: " << result << endl;
+            temp.setStr(result);
+            b = b + temp;
+            result = "";
         }
-        // we are doing a * b
-        while (n1 >= 0) {
-            int x = a[n1] - '0';
-        }
+        return b;
     }
 
     void print() { cout << str << endl; }
+
+    void setStr(string s) { str = s; }
 };
 
 int main() {
@@ -158,6 +181,6 @@ int main() {
     cin >> a >> b;
     Bigint b1(a);
     Bigint b2(b);
-    Bigint b3 = b1 + b2;
+    Bigint b3 = b1 * b2;
     b3.print();
 }

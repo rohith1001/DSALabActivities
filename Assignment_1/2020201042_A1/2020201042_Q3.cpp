@@ -47,6 +47,7 @@ template <class T> class deque {
         } else {
             if (size() == max_size) {
                 // that means deque is really full
+                int previous_size = size();
                 T *temp = new T[(2 * max_size)];
                 int temp_idx = 0;
                 while (head != tail) {
@@ -56,10 +57,10 @@ template <class T> class deque {
                 }
                 temp[temp_idx] = arr[head];
                 temp[temp_idx + 1] = x;
+                tail = previous_size;
+                head = 0;
                 delete[] arr;
                 arr = temp;
-                head = 0;
-                tail = size();
                 max_size *= 2;
             } else {
                 // deque is not empty and also not full
@@ -151,7 +152,9 @@ template <class T> class deque {
     }
 
     void resize(int x, T d) {
+        cout << "Inside resize!!!" << endl;
         if (x < size()) {
+            cout << "Inside 157!!" << endl;
             if (x < 0) {
                 cout << "Resize to negative values is not allowed..." << endl;
             } else if (x == 0) {
@@ -161,6 +164,7 @@ template <class T> class deque {
                 tail = (head + x - 1) % max_size;
             }
         } else if (max_size - size() >= x) {
+            cout << "Inside 167!!" << endl;
             // this means no need of new memory
             if (head == -1) {
                 for (int i = 0; i < x; i++) {
@@ -180,6 +184,7 @@ template <class T> class deque {
                 tail = (tail + x) % max_size;
             }
         } else {
+            cout << "Inside 187!!" << endl;
             // this means max_size - size() < x
             // we need to create a new temp array, copy etc.
             T *temp = new T[x];
@@ -212,7 +217,7 @@ template <class T> class deque {
 
     string empty() {
         string str;
-        if (isEmpty) {
+        if (isEmpty()) {
             str = "true";
         } else {
             str = "false";
@@ -244,12 +249,94 @@ int main() {
         // no parameter for constructor here
         deque<int> d1;
         while (q--) {
+            int choice;
+            cin >> choice;
+            if (choice == 1) {
+                int x;
+                cin >> x;
+                d1.push_front(x);
+                d1.display();
+            } else if (choice == 2) {
+                d1.pop_front();
+                d1.display();
+            } else if (choice == 3) {
+                int x;
+                cin >> x;
+                d1.push_back(x);
+                d1.display();
+            } else if (choice == 4) {
+                d1.pop_back();
+                d1.display();
+            } else if (choice == 7) {
+                cout << d1.front() << endl;
+            } else if (choice == 8) {
+                cout << d1.back() << endl;
+            } else if (choice == 9) {
+                cout << d1.empty() << endl;
+            } else if (choice == 10) {
+                cout << d1.size() << endl;
+            } else if (choice == 11) {
+                int x, d;
+                cin >> x >> d;
+                d1.resize(x, d);
+                d1.display();
+            } else if (choice == 12) {
+                d1.clear();
+                d1.display();
+            } else if (choice == 13) {
+                int n;
+                cin >> n;
+                cout << d1[n] << endl;
+            } else {
+                d1.display();
+            }
         }
     } else {
-        int n, x;
-        cin >> n >> x;
-        deque<int> d2(n, x);
+        int num, def_val;
+        cin >> num >> def_val;
+        deque<int> d2(num, def_val);
         while (q--) {
+            int choice;
+            cin >> choice;
+            if (choice == 1) {
+                int x;
+                cin >> x;
+                d2.push_front(x);
+                d2.display();
+            } else if (choice == 2) {
+                d2.pop_front();
+                d2.display();
+            } else if (choice == 3) {
+                int x;
+                cin >> x;
+                d2.push_back(x);
+                d2.display();
+            } else if (choice == 4) {
+                d2.pop_back();
+                d2.display();
+            } else if (choice == 7) {
+                cout << d2.front() << endl;
+            } else if (choice == 8) {
+                cout << d2.back() << endl;
+            } else if (choice == 9) {
+                cout << d2.empty() << endl;
+            } else if (choice == 10) {
+                cout << d2.size() << endl;
+            } else if (choice == 11) {
+                int x, d;
+                cin >> x >> d;
+                d2.resize(x, d);
+                d2.display();
+            } else if (choice == 12) {
+                d2.clear();
+                d2.display();
+            } else if (choice == 13) {
+                int n;
+                cin >> n;
+                cout << d2[n] << endl;
+            } else {
+                d2.display();
+            }
         }
     }
     return 0;
