@@ -169,16 +169,29 @@ class Bigint {
 
     // Bigint power(Bigint b1, Bigint b2) { Bigint b("1"); }
 
+    Bigint factorial() {
+        Bigint b_temp("1");
+        Bigint b(str);
+        while (!(b.str == "0" || b.str == "1")) {
+            Bigint const1("1");
+            b_temp = b_temp * b;
+            b = b - const1;
+        }
+        return b_temp;
+    }
+
     void print() { cout << str << endl; }
 
     void setStr(string s) { str = s; }
 };
 
 int main() {
-    string a, b;
-    cin >> a >> b;
+    string a;
+    cin >> a;
     Bigint b1(a);
-    Bigint b2(b);
-    Bigint b3 = b1 * b2;
-    b3.print();
+    b1.print();
+    cout << "Taking factorial of " << a << endl;
+    Bigint b2 = b1.factorial();
+    b2.print();
+    return 0;
 }
