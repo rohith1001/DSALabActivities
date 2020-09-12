@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 using namespace std;
 
@@ -53,7 +54,7 @@ class Bigint {
                 carry = 0;
             }
         }
-        ans = string(ans.rbegin(), ans.rend());
+        reverse(ans.begin(), ans.end());
         if (n1 > n2 && n1 >= 0) {
             // copy every char from 0 to n1 to temp
             string temp;
@@ -120,7 +121,7 @@ class Bigint {
                 ans += to_string(a);
             }
         }
-        ans = string(ans.rbegin(), ans.rend());
+        reverse(ans.begin(), ans.end());
         if (n1 > n2) {
             // copy every char from 0 to n1 to temp
             string temp;
@@ -156,7 +157,7 @@ class Bigint {
             if (carry > 0) {
                 result += to_string(carry);
             }
-            result = string(result.rbegin(), result.rend());
+            reverse(result.begin(), result.end());
             for (int k = 0; k < str.size() - i - 1; k++) {
                 result += "0";
             }
@@ -167,17 +168,238 @@ class Bigint {
         return b;
     }
 
-    // Bigint power(Bigint b1, Bigint b2) { Bigint b("1"); }
-
     Bigint factorial() {
         Bigint b_temp("1");
-        Bigint b(str);
-        while (!(b.str == "0" || b.str == "1")) {
-            Bigint const1("1");
-            b_temp = b_temp * b;
-            b = b - const1;
+        if (str == "0" || str == "1") {
+            return b_temp;
         }
-        return b_temp;
+
+        Bigint s(str);
+        Bigint product("1");
+        while (s.str != "0") {
+            Bigint b_const("1");
+            product = product * b_temp;
+            b_temp = b_temp + b_const;
+            s = s - b_const;
+        }
+        return product;
+    }
+
+    Bigint operator/(Bigint &obj) {
+        string str1 = str;
+        string str2 = obj.str;
+        Bigint b1(str1), b2(str2);
+        int res = b1.compare(b2);
+        if (res == -1) {
+            Bigint temp("0");
+            return temp;
+        } else if (res == 0) {
+            Bigint temp("1");
+            return temp;
+        }
+
+        Bigint temp1(str2); // this will subtract
+        Bigint temp2("1");  // this is for the adding each time to the result
+        Bigint result("0"); // this is for storing result
+        while (res == 1) {
+            result = result + temp2;
+            temp2 = temp2 * b2;
+            b1 = b1 - temp1;
+            temp1 = temp1 * b2;
+            res = b1.compare(temp1);
+        }
+        if (res == 0) {
+            result = result + temp2;
+            return result;
+        }
+
+        res = b1.compare(b2);
+        Bigint count("1");
+        Bigint const_one("1");
+        Bigint sub_factor(obj.str);
+        while (res == 1) {
+            b1 = b1 - sub_factor;
+            result = result + count;
+            count = count + const_one;
+            sub_factor = count * b2;
+            res = b1.compare(sub_factor);
+        }
+
+        res = b1.compare(b2);
+        count.setStr("1");
+        const_one.setStr("1");
+        while (res == 1) {
+            b1 = b1 - b2;
+            result = result + const_one;
+            res = b1.compare(b2);
+        }
+
+        const_one.setStr("1");
+        if (res == 0) {
+            result = result + const_one;
+        }
+        return result;
+    }
+
+    Bigint operator%(Bigint &obj) {
+        string str1 = str;
+        string str2 = obj.str;
+        Bigint b1(str1), b2(str2);
+        int res = b1.compare(b2);
+        if (res == -1) {
+            return b1;
+        } else if (res == 0) {
+            Bigint temp("0");
+            return temp;
+        }
+
+        Bigint c = b1 / b2;
+        Bigint product = b2 * c;
+        Bigint modulo = b1 - product;
+
+        return modulo;
+    }
+
+    Bigint euclid_gcd(Bigint &obj) {
+        string str1 = str;
+        string str2 = obj.str;
+        Bigint b1(str1), b2(str2);
+        Bigint const_zero("0");
+        int res = b2.compare(const_zero);
+        while (res != 0) {
+            Bigint temp = b2;
+            b2 = b1 % b2;
+            b1 = temp;
+            res = b2.compare(const_zero);
+        }
+        return b1;
+    }
+
+    Bigint custom_gcd(Bigint &obj) {
+        string str1 = str;
+        string str2 = obj.str;
+        Bigint b1(str1), b2(str2);
+        Bigint const_zero("0");
+        Bigint const_two("2");
+        int res;
+
+        res = b1.compare(b2);
+        if (res == 0) {
+            return b1;
+        }
+
+        res = b1.compare(const_zero);
+        if (res == 0) {
+            // b1 is zero
+            return b2;
+        }
+
+        res = b2.compare(const_zero);
+        if (res == 0) {
+            // b2 is zero
+            return b1;
+        }
+
+        if (b1.isEven()) {
+            // b1 is even
+            if (!b2.isEven()) {
+                // b2 is odd
+                Bigint temp(str1);
+                temp = temp / const_two;
+                return temp.custom_gcd(b2);
+            } else {
+                // means both b1 and b2 are even
+                Bigint temp1(str1);
+                Bigint temp2(str2);
+                temp1 = temp1 / const_two;
+                temp2 = temp2 / const_two;
+                return (temp1.custom_gcd(temp2) * const_two);
+            }
+        }
+
+        // its here, that means b1 is odd
+        if (b2.isEven()) {
+            Bigint temp2(str2);
+            temp2 = temp2 / const_two;
+            return b1.custom_gcd(temp2);
+        }
+
+        // its here that means b1 and b2 are both odd
+        res = b1.compare(b2);
+
+        if (res == 1) {
+            Bigint temp1(str1);
+            temp1 = temp1 - b2;
+            return temp1.custom_gcd(b2);
+        }
+
+        // its here that means b1 <= b2
+        Bigint temp2(str2);
+        temp2 = temp2 - b1;
+        return temp2.custom_gcd(b1);
+    }
+
+    Bigint power(Bigint b1, int x) {
+        string a = b1.str;
+        bool append_minus = false;
+        if (a[0] == '-') {
+            if (x % 2 == 1) {
+                append_minus = true;
+            }
+            a = a.substr(1, a.size() - 1);
+        }
+
+        Bigint bigNum(a);
+        Bigint bigAns("1");
+        while (x != 0) {
+            if ((x % 2) == 1) {
+                bigAns = bigAns * bigNum;
+                x = x - 1;
+            } else {
+                bigNum = bigNum * bigNum;
+                x = x >> 1;
+            }
+        }
+
+        if (append_minus) {
+            string temp = "-";
+            temp += bigAns.str;
+            bigAns.setStr(temp);
+        }
+
+        return bigAns;
+    }
+
+    int compare(Bigint b) {
+        string str1 = str;
+        string str2 = b.str;
+        if (str1.size() > str2.size()) {
+            return 1;
+        } else if (str1.size() < str2.size()) {
+            return -1;
+        }
+        int n1 = 0;
+        int n2 = 0;
+        while (n1 != str1.size() && n2 != str2.size()) {
+            int x = str1[n1] - '0';
+            int y = str2[n2] - '0';
+            if (x < y)
+                return -1;
+            else if (x > y)
+                return 1;
+            n1++;
+            n2++;
+        }
+        return 0;
+    }
+
+    bool isEven() {
+        string str1 = str;
+        int n = str1.size();
+        if (str[n - 1] == '0' || str[n - 1] == '2' || str[n - 1] == '4' || str[n - 1] == '6' || str[n - 1] == '8') {
+            return true;
+        }
+        return false;
     }
 
     void print() { cout << str << endl; }
@@ -186,12 +408,38 @@ class Bigint {
 };
 
 int main() {
-    string a;
-    cin >> a;
-    Bigint b1(a);
-    b1.print();
-    cout << "Taking factorial of " << a << endl;
-    Bigint b2 = b1.factorial();
-    b2.print();
+    string a, b;
+    cin >> a >> b;
+    Bigint b1(a), b2(b);
+    Bigint c = b1 / b2;
+    c.print();
+    // int q;
+    // cin >> q;
+
+    // while (q--) {
+    //     int choice;
+    //     cin >> choice;
+
+    //     if (choice == 1) {
+    //         string x, y;
+    //         cin >> x >> y;
+    //         Bigint num1(x), num2(y);
+    //         Bigint z = num1.power(num2);
+    //         z.print();
+    //     } else if (choice == 2) {
+    //         string x, y;
+    //         cin >> x >> y;
+    //         Bigint num1(x), num2(y);
+    //         Bigint z = num1.euclid_gcd(num2);
+    //         z.print();
+    //     } else {
+    //         string x;
+    //         cin >> x;
+    //         Bigint num1(x);
+    //         num1.factorial();
+    //         num1.print();
+    //     }
+    // }
+
     return 0;
 }
