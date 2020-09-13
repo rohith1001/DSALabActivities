@@ -152,39 +152,15 @@ template <class T> class deque {
     }
 
     void resize(int x, T d) {
-        cout << "Inside resize!!!" << endl;
         if (x < size()) {
-            cout << "Inside 157!!" << endl;
             if (x < 0) {
-                cout << "Resize to negative values is not allowed..." << endl;
             } else if (x == 0) {
                 head = -1;
                 tail = 0;
             } else {
                 tail = (head + x - 1) % max_size;
             }
-        } else if (max_size - size() >= x) {
-            cout << "Inside 167!!" << endl;
-            // this means no need of new memory
-            if (head == -1) {
-                for (int i = 0; i < x; i++) {
-                    arr[i] = d;
-                }
-                head = 0;
-                tail = x - 1;
-            } else {
-                // just let old elements as it is
-                // copy after rear
-                int temp_idx = (tail + 1) % max_size;
-                int n = x - size();
-                while (n--) {
-                    arr[temp_idx] = d;
-                    temp_idx = (temp_idx + 1) % max_size;
-                }
-                tail = (tail + x) % max_size;
-            }
         } else {
-            cout << "Inside 187!!" << endl;
             // this means max_size - size() < x
             // we need to create a new temp array, copy etc.
             T *temp = new T[x];
@@ -205,12 +181,15 @@ template <class T> class deque {
             arr = temp;
             head = 0;
             tail = x - 1;
+            max_size = x;
         }
     }
 
     void clear() {
         head = -1;
         tail = 0;
+        delete[] arr;
+        max_size = 1;
     }
 
     bool isEmpty() { return (head == -1); }
@@ -228,12 +207,14 @@ template <class T> class deque {
     int get_max_size() { return max_size; }
 
     void display() {
-        int i = head;
-        while (i != tail) {
-            cout << arr[i] << " ";
-            i = (i + 1) % max_size;
+        if (head != -1) {
+            int i = head;
+            while (i != tail) {
+                cout << arr[i] << " ";
+                i = (i + 1) % max_size;
+            }
+            cout << arr[i] << endl;
         }
-        cout << arr[i] << endl;
     }
 
     ~deque() { delete[] arr; }
