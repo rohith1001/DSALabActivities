@@ -1,10 +1,5 @@
 #include <iostream>
-#define TABLE_SIZE 10
-#define BASE (long long)3
-#define INITIAL_VALUE (long long)7
-#define MACHINE_WORD (long long)64
-#define ODD_POSITIVE (long long)7
-#define BITS_IN_TABLE_SIZE (long long)1
+#define TABLE_SIZE 2
 using namespace std;
 
 template <typename T1, typename T2> struct myPair {
@@ -20,22 +15,32 @@ template <typename T1, typename T2> class unordered_map {
     unordered_map() { hashTable[TABLE_SIZE] = {}; }
 
     long long hashFunction(string key) {
-        long long x = INITIAL_VALUE;
-        long long a = BASE;
+        unsigned long long initial_value_x = 0;
+        unsigned long long base_a = 256;
         for (auto ch : key) {
-            x = ((x * a) + (int)ch) % TABLE_SIZE;
+            initial_value_x = ((initial_value_x * base_a) + (int)ch) % TABLE_SIZE;
         }
-        cout << "String hash is returning: " << x << endl;
-        return (x % TABLE_SIZE);
+        return (initial_value_x % TABLE_SIZE);
+    }
+
+    long long hashFunction(char key) {
+        unsigned long long initial_value_x = 0;
+        initial_value_x = ((int)key % TABLE_SIZE);
+        return (initial_value_x % TABLE_SIZE);
     }
 
     long long hashFunction(int key) {
-        long long a = ODD_POSITIVE;
-        long long w = MACHINE_WORD;
-        long long M = BITS_IN_TABLE_SIZE;
-        long long h = (size_t)(a * key) >> (w - M);
-        cout << "Int hash is returning: " << h << endl;
-        return h;
+        unsigned long long int myHash;
+        unsigned long long int modulus_m = (1UL << 48);
+        unsigned long long int multiplier_a = 25214903917;
+        unsigned long long int increment_c = 11;
+        if (key >= 0) {
+            myHash = (multiplier_a * key + increment_c) % modulus_m;
+        } else {
+            myHash = (multiplier_a * (-1 * key) + increment_c) % modulus_m;
+        }
+        myHash = myHash % TABLE_SIZE;
+        return myHash;
     }
 
     void insert(T1 k, T2 v) {
@@ -56,32 +61,105 @@ template <typename T1, typename T2> class unordered_map {
                 if (myPtr->key == k) {
                     // simply update the value
                     myPtr->value = v;
-                    break;
+                    cout << "Warning...updating value of a previous key,value" << endl;
+                    return;
                 }
                 myPtr = (myPtr->next);
             }
+            // control here means, myPtr->next is NULL
+            // myPtr->next is NULL now
+            if (myPtr->key == k) {
+                // just checking the last element in the chain
+                cout << "Warning...updating value of a previous key,value" << endl;
+                myPtr->value = v;
+            } else {
+                struct myPair<T1, T2> *p = new myPair<T1, T2> {
+                    .key = k, .value = v, .next = NULL
+                };
 
-            if (myPtr->next == NULL) {
-                // myPtr->next is NULL now
-                if (myPtr->key == k) {
-                    myPtr->value = v;
-                } else {
-                    struct myPair<T1, T2> *p = new myPair<T1, T2> {
-                        .key = k, .value = v, .next = NULL
-                    };
-
-                    myPtr->next = p;
-                }
+                myPtr->next = p;
             }
         }
         cout << "Successfully exiting insert" << endl;
     }
 
-    void erase(T1 key);
+    void erase(T1 k) {
+        long long index = hashFunction(k);
+        if (hashTable[index] == NULL) {
+            // nothing doing :P
+            return;
+        }
+        // hashTable[index] != NULL here
+        if (hashTable[index]->key == k) {
+            hashTable[index] = hashTable[index]->next;
+            return;
+        }
+        // control here, means hashTable[index] is not null
+        // and hashTable[index]->key != k
+        struct myPair<T1, T2> *myPtr, *prevPtr;
+        myPtr = hashTable[index];
+        prevPtr = hashTable[index];
+        while (myPtr->next != NULL) {
+            if (myPtr->key == k) {
+                prevPtr = myPtr->next;
+                free(myPtr);
+                return;
+            }
+            prevPtr = myPtr;
+            myPtr = myPtr->next;
+        }
 
-    bool find(T1 key);
+        prevPtr->next = myPtr->next;
+        free(myPtr);
+        return;
+    };
 
-    T1 &operator[](long long n);
+    bool find(T1 k) {
+        long long index = hashFunction(k);
+        if (hashTable[index] == NULL) {
+            return false;
+        }
+        struct myPair<T1, T2> *myPtr;
+        myPtr = hashTable[index];
+        while (myPtr != NULL) {
+            if (myPtr->key == k) {
+                return true;
+            }
+            myPtr = myPtr->next;
+        }
+        return false;
+    };
+
+    T2 operator[](T1 k) {
+        long long index = hashFunction(k);
+        if (hashTable[index] == NULL) {
+            T2 default_value = {};
+            struct myPair<T1, T2> *p = new myPair<T1, T2> {
+                .key = k, .value = {}, .next = NULL
+            };
+            hashTable[index] = p;
+            return default_value;
+        }
+
+        // control here, means hashTable[index] is not null
+        struct myPair<T1, T2> *myPtr;
+        myPtr = hashTable[index];
+        while (myPtr->next != NULL) {
+            if (myPtr->key == k) {
+                return myPtr->value;
+            }
+            myPtr = myPtr->next;
+        }
+        // hashed value caused a collision
+        // but there is no element corresponding to the key
+        // also if you're here that means myPtr->next is NULL
+        T2 default_value = {};
+        struct myPair<T1, T2> *p = new myPair<T1, T2> {
+            .key = k, .value = {}, .next = NULL
+        };
+        myPtr->next = p;
+        return default_value;
+    };
 
     void printTable() {
         for (long long i = 0; i < TABLE_SIZE; i++) {
@@ -92,7 +170,7 @@ template <typename T1, typename T2> class unordered_map {
                 // nodePtr is pointing to the same place where hashTable[i] is pointing
                 while (nodePtr != NULL) {
                     cout << "[" << nodePtr->key << "]: " << nodePtr->value << " ";
-                    nodePtr = nodePtr->next;
+                    nodePtr = (nodePtr->next);
                 }
                 cout << endl;
             }
@@ -104,6 +182,26 @@ int main() {
     unordered_map<int, int> a;
     a.insert(2, 2);
     a.insert(3, 3);
+    a.insert(4, 4);
+    a.insert(3, 4);
+    a.insert(6, 6);
+    a.insert(7, 7);
     a.printTable();
+    cout << a[5] << endl;
+    cout << "Erasing 3" << endl;
+    a.erase(3);
+    a.printTable();
+    a.insert(5, 5);
+    a.printTable();
+    cout << "Erasing 4" << endl;
+    a.erase(4);
+    a.printTable();
+    cout << "Erasing 2" << endl;
+    a.erase(2);
+    a.printTable();
+    cout << "Erasing 5" << endl;
+    a.erase(5);
+    a.printTable();
+    cout << a.find(7) << a.find(0) << a.find(3) << endl;
     return 0;
 }
