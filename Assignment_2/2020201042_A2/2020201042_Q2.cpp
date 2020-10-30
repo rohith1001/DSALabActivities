@@ -1,5 +1,5 @@
 #include <iostream>
-#define TABLE_SIZE 2
+#define TABLE_SIZE 1000
 using namespace std;
 
 template <typename T1, typename T2> struct myPair {
@@ -43,6 +43,18 @@ template <typename T1, typename T2> class unordered_map {
         return myHash;
     }
 
+    long long hashFunction(float key) {
+        // hashing floating points is a bad idea
+        int x = (int)key;
+        return hashFunction(x);
+    }
+
+    long long hashFunction(double key) {
+        // hashing floating points is a bad idea
+        int x = (int)key;
+        return hashFunction(x);
+    }
+
     void insert(T1 k, T2 v) {
         long long index = hashFunction(k);
         if (hashTable[index] == NULL) {
@@ -56,8 +68,6 @@ template <typename T1, typename T2> class unordered_map {
             struct myPair<T1, T2> *myPtr;
             myPtr = hashTable[index];
             while (myPtr->next != NULL) {
-                cout << myPtr->key << endl;
-                cout << "OMG! Struck here." << endl;
                 if (myPtr->key == k) {
                     // simply update the value
                     myPtr->value = v;
@@ -80,7 +90,6 @@ template <typename T1, typename T2> class unordered_map {
                 myPtr->next = p;
             }
         }
-        cout << "Successfully exiting insert" << endl;
     }
 
     void erase(T1 k) {
@@ -178,30 +187,4 @@ template <typename T1, typename T2> class unordered_map {
     }
 };
 
-int main() {
-    unordered_map<int, int> a;
-    a.insert(2, 2);
-    a.insert(3, 3);
-    a.insert(4, 4);
-    a.insert(3, 4);
-    a.insert(6, 6);
-    a.insert(7, 7);
-    a.printTable();
-    cout << a[5] << endl;
-    cout << "Erasing 3" << endl;
-    a.erase(3);
-    a.printTable();
-    a.insert(5, 5);
-    a.printTable();
-    cout << "Erasing 4" << endl;
-    a.erase(4);
-    a.printTable();
-    cout << "Erasing 2" << endl;
-    a.erase(2);
-    a.printTable();
-    cout << "Erasing 5" << endl;
-    a.erase(5);
-    a.printTable();
-    cout << a.find(7) << a.find(0) << a.find(3) << endl;
-    return 0;
-}
+int main() { return 0; }
