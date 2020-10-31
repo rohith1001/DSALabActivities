@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#define CHUNK_MAX_RECORDS 100
+#define CHUNK_MAX_RECORDS 5
 using namespace std;
 
 void merge(int arr[], int l, int m, int r);
@@ -7,6 +7,7 @@ void mergeSort(int arr[], int l, int r);
 FILE *openFile(char *fileName, char *mode);
 
 int noOfChunks;
+int jjjj = 1;
 struct heapNode {
     int data = 0;
     int fileNumber = 0;
@@ -48,7 +49,7 @@ class custom_heap {
         int smallest = i;
         if (lt < size && heapArr[lt].data < heapArr[i].data)
             smallest = lt;
-        if (rt < size && heapArr[rt].data < heapArr[i].data)
+        if (rt < size && heapArr[rt].data < heapArr[smallest].data)
             smallest = rt;
         if (smallest != i) {
             mySwap(i, smallest);
@@ -70,7 +71,6 @@ class custom_heap {
         heapArr[size].data = d;
         heapArr[size].fileNumber = f;
         size++;
-        display();
         int i = size - 1;
         while (i != 0 && (heapArr[parent(i)].data > heapArr[i].data)) {
             mySwap(i, parent(i));
@@ -103,8 +103,8 @@ class custom_heap {
     }
 
     void deleteRoot() {
-        heapArr[0].data = INT_MIN;
         struct heapNode ignore = extractMin();
+        minHeapify(0);
     }
 
     void display() {
@@ -136,12 +136,12 @@ void merge(int arr[], int l, int m, int r) {
         left[i] = arr[l + i];
     }
     for (int j = 0; j < n2; j++) {
-        right[j] = arr[m + j + 1];
+        right[j] = arr[m + 1 + j];
     }
 
     int i = 0, j = 0, k = l;
     while (i < n1 && j < n2) {
-        if (left[i] <= right[i]) {
+        if (left[i] <= right[j]) {
             arr[k++] = left[i++];
         } else {
             arr[k++] = right[j++];
@@ -163,6 +163,13 @@ FILE *openFile(char *fileName, char *mode) {
     return fp;
 }
 
+void printArray(int arr[]) {
+    for (int i = 0; i < CHUNK_MAX_RECORDS; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
 void sortChunkWise(char *inBigFileName) {
     FILE *in = openFile(inBigFileName, (char *)"r");
 
@@ -178,9 +185,10 @@ void sortChunkWise(char *inBigFileName) {
                 break;
             }
         }
-
         if (isThereMoreInput || i != 0) {
+            printArray(tempArr);
             mergeSort(tempArr, 0, i - 1);
+            printArray(tempArr);
             string outFileNameStr = to_string(outFileNameInInt) + ".txt";
             char outFileNameCharArr[outFileNameStr.size()];
             strcpy(outFileNameCharArr, outFileNameStr.c_str());
@@ -193,7 +201,8 @@ void sortChunkWise(char *inBigFileName) {
             }
             fclose(outSmallSortedChunk);
         }
-        outFileNameInInt++;
+        if (i != 0)
+            outFileNameInInt++;
     }
     noOfChunks = outFileNameInInt;
     fclose(in);
@@ -220,7 +229,7 @@ void mergeFiles(char *outBigFileName) {
         // tempData as the heapNode's data and i as the heapNode's fileNumber
         myHeap.insert(tempData, i);
     }
-
+    myHeap.display();
     int count = 0;
     while (count != i) {
         struct heapNode myMinNode = myHeap.getMin();
@@ -229,10 +238,12 @@ void mergeFiles(char *outBigFileName) {
         if (fscanf(in[myMinNode.fileNumber], "%d,", &tempData) != 1) {
             count++;
             myHeap.deleteRoot();
+            myHeap.display();
         } else {
             // add tempData to the root and minHeapify(0)
             // in this case you would have read from the same file, hence no need to update fileNumber
             myHeap.replaceRootMinHeapify(tempData);
+            myHeap.display();
         }
     }
 
