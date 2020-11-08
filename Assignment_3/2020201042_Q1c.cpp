@@ -1,9 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int lengthOfLongestPalindrome(string s) {
+string findLongestPalindrome(string s) {
+    vector<string> ans;
     if (s.size() <= 1) {
-        return s.size();
+        return s;
     }
     int maxLen = 1;
     int n = s.size();
@@ -20,10 +21,16 @@ int lengthOfLongestPalindrome(string s) {
         }
 
         int len = r - l - 1;
+        if (len == maxLen) {
+            ans.push_back(s.substr(l + 1, maxLen));
+        }
         if (len > maxLen) {
+            ans.clear();
             maxLen = len;
+
             start = l + 1;
             end = r - 1;
+            ans.push_back(s.substr(start, maxLen));
         }
     }
 
@@ -38,19 +45,26 @@ int lengthOfLongestPalindrome(string s) {
         }
 
         int len = r - l - 1;
+        if (len == maxLen) {
+            ans.push_back(s.substr(l + 1, maxLen));
+        }
         if (len > maxLen) {
+            ans.clear();
             maxLen = len;
+
             start = l + 1;
             end = r - 1;
+            ans.push_back(s.substr(start, maxLen));
         }
     }
-    return maxLen;
+    sort(ans.begin(), ans.end());
+    return ans[0];
 }
 
 int main() {
     string myStr;
     cin >> myStr;
-    int x = lengthOfLongestPalindrome(myStr);
+    string x = findLongestPalindrome(myStr);
 
     cout << x << endl;
 
