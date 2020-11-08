@@ -2,7 +2,7 @@
 using namespace std;
 
 string findLongestPalindrome(string s) {
-    vector<string> ans;
+    string ans;
     if (s.size() <= 1) {
         return s;
     }
@@ -22,15 +22,16 @@ string findLongestPalindrome(string s) {
 
         int len = r - l - 1;
         if (len == maxLen) {
-            ans.push_back(s.substr(l + 1, maxLen));
+            if ((s.substr(l + 1, maxLen)) < ans) {
+                ans = s.substr(l + 1, maxLen);
+            }
         }
         if (len > maxLen) {
-            ans.clear();
             maxLen = len;
 
             start = l + 1;
             end = r - 1;
-            ans.push_back(s.substr(start, maxLen));
+            ans = (s.substr(start, maxLen));
         }
     }
 
@@ -46,19 +47,19 @@ string findLongestPalindrome(string s) {
 
         int len = r - l - 1;
         if (len == maxLen) {
-            ans.push_back(s.substr(l + 1, maxLen));
+            if ((s.substr(l + 1, maxLen)) < ans) {
+                ans = s.substr(l + 1, maxLen);
+            }
         }
         if (len > maxLen) {
-            ans.clear();
             maxLen = len;
 
             start = l + 1;
             end = r - 1;
-            ans.push_back(s.substr(start, maxLen));
+            ans = (s.substr(start, maxLen));
         }
     }
-    sort(ans.begin(), ans.end());
-    return ans[0];
+    return ans;
 }
 
 int main() {
