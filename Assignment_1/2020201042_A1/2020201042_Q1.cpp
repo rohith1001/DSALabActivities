@@ -1,6 +1,5 @@
-#include <cmath>
-#include <iomanip>
-#include <iostream>
+#include <bits/stdc++.h>
+using ll = long long;
 using namespace std;
 
 template <typename T> struct node {
@@ -143,6 +142,6 @@ int main() {
     string exp;
     cin >> exp;
     double ans = calculate(exp);
-    cout << fixed << setprecision(5) << ans << endl;
+    cout << fixed << setprecision(7) << ans << endl;
     return 0;
 }
